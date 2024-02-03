@@ -53,7 +53,8 @@ CREATE TABLE public.galaxy (
     size integer NOT NULL,
     age_in_million_of_years integer,
     galaxy_type character varying(255),
-    has_black_hole boolean NOT NULL
+    has_black_hole boolean NOT NULL,
+    galaxy_type_id integer
 );
 
 
@@ -79,6 +80,41 @@ ALTER TABLE public.galaxy_galaxy_id_seq OWNER TO freecodecamp;
 --
 
 ALTER SEQUENCE public.galaxy_galaxy_id_seq OWNED BY public.galaxy.galaxy_id;
+
+
+--
+-- Name: galaxy_type; Type: TABLE; Schema: public; Owner: freecodecamp
+--
+
+CREATE TABLE public.galaxy_type (
+    galaxy_type_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    description text
+);
+
+
+ALTER TABLE public.galaxy_type OWNER TO freecodecamp;
+
+--
+-- Name: galaxy_types_galaxy_type_id_seq; Type: SEQUENCE; Schema: public; Owner: freecodecamp
+--
+
+CREATE SEQUENCE public.galaxy_types_galaxy_type_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.galaxy_types_galaxy_type_id_seq OWNER TO freecodecamp;
+
+--
+-- Name: galaxy_types_galaxy_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
+--
+
+ALTER SEQUENCE public.galaxy_types_galaxy_type_id_seq OWNED BY public.galaxy_type.galaxy_type_id;
 
 
 --
@@ -129,7 +165,8 @@ CREATE TABLE public.planet (
     distance_from_star integer NOT NULL,
     is_inhabited boolean,
     planet_type character varying(255),
-    star_id integer
+    star_id integer,
+    description text
 );
 
 
@@ -204,6 +241,13 @@ ALTER TABLE ONLY public.galaxy ALTER COLUMN galaxy_id SET DEFAULT nextval('publi
 
 
 --
+-- Name: galaxy_type galaxy_type_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.galaxy_type ALTER COLUMN galaxy_type_id SET DEFAULT nextval('public.galaxy_types_galaxy_type_id_seq'::regclass);
+
+
+--
 -- Name: moon moon_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
 --
 
@@ -228,12 +272,21 @@ ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.st
 -- Data for Name: galaxy; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.galaxy VALUES (1, 'Milky Way', 100000, 13000, 'Spiral', true);
-INSERT INTO public.galaxy VALUES (2, 'Andromeda', 120000, 10000, 'Spiral', false);
-INSERT INTO public.galaxy VALUES (3, 'Triangulum', 50000, 8000, 'Irregular', false);
-INSERT INTO public.galaxy VALUES (4, 'Messier 87', 150000, 16000, 'Elliptical', true);
-INSERT INTO public.galaxy VALUES (5, 'Whirlpool', 70000, 12000, 'Spiral', false);
-INSERT INTO public.galaxy VALUES (6, 'Sombrero', 60000, 14000, 'Spiral', false);
+INSERT INTO public.galaxy VALUES (1, 'Milky Way', 100000, 13000, 'Spiral', true, 1);
+INSERT INTO public.galaxy VALUES (2, 'Andromeda', 120000, 10000, 'Spiral', false, 1);
+INSERT INTO public.galaxy VALUES (3, 'Triangulum', 50000, 8000, 'Irregular', false, 3);
+INSERT INTO public.galaxy VALUES (4, 'Messier 87', 150000, 16000, 'Elliptical', true, 2);
+INSERT INTO public.galaxy VALUES (5, 'Whirlpool', 70000, 12000, 'Spiral', false, 1);
+INSERT INTO public.galaxy VALUES (6, 'Sombrero', 60000, 14000, 'Spiral', false, 1);
+
+
+--
+-- Data for Name: galaxy_type; Type: TABLE DATA; Schema: public; Owner: freecodecamp
+--
+
+INSERT INTO public.galaxy_type VALUES (1, 'Spiral', 'Spiral-shaped galaxies with a central bulge and spiral arms');
+INSERT INTO public.galaxy_type VALUES (2, 'Elliptical', 'Elliptical-shaped galaxies with a smooth, nearly featureless appearance');
+INSERT INTO public.galaxy_type VALUES (3, 'Irregular', 'Galaxies with no definite shape or structure');
 
 
 --
@@ -266,18 +319,18 @@ INSERT INTO public.moon VALUES (20, 'Ariel', 578, false, true, 11);
 -- Data for Name: planet; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.planet VALUES (1, 'Earth', 93, true, 'Terrestrial', 1);
-INSERT INTO public.planet VALUES (2, 'Mars', 142, false, 'Terrestrial', 1);
-INSERT INTO public.planet VALUES (3, 'Venus', 67, false, 'Terrestrial', 1);
-INSERT INTO public.planet VALUES (4, 'Jupiter', 484, false, 'Gas Giant', 2);
-INSERT INTO public.planet VALUES (5, 'Saturn', 886, false, 'Gas Giant', 2);
-INSERT INTO public.planet VALUES (6, 'Neptune', 4495, false, 'Ice Giant', 3);
-INSERT INTO public.planet VALUES (7, 'Mercury', 36, false, 'Terrestrial', 4);
-INSERT INTO public.planet VALUES (8, 'Uranus', 1784, false, 'Ice Giant', 4);
-INSERT INTO public.planet VALUES (9, 'Pluto', 5900, false, 'Dwarf', 5);
-INSERT INTO public.planet VALUES (10, 'Kepler-186f', 500, true, 'Terrestrial', 6);
-INSERT INTO public.planet VALUES (11, 'Proxima b', 4, false, 'Terrestrial', 6);
-INSERT INTO public.planet VALUES (12, 'Gliese 581g', 20, true, 'Terrestrial', 6);
+INSERT INTO public.planet VALUES (1, 'Earth', 93, true, 'Terrestrial', 1, 'Home to humans and diverse ecosystems');
+INSERT INTO public.planet VALUES (2, 'Mars', 142, false, 'Terrestrial', 1, 'Known as the Red Planet with iron-rich soil');
+INSERT INTO public.planet VALUES (3, 'Venus', 67, false, 'Terrestrial', 1, 'Similar in size to Earth with a thick atmosphere');
+INSERT INTO public.planet VALUES (4, 'Jupiter', 484, false, 'Gas Giant', 2, 'Largest planet with a Great Red Spot');
+INSERT INTO public.planet VALUES (5, 'Saturn', 886, false, 'Gas Giant', 2, 'Famous for its spectacular ring system');
+INSERT INTO public.planet VALUES (6, 'Neptune', 4495, false, 'Ice Giant', 3, 'Cold and windy ice giant with a dark storm');
+INSERT INTO public.planet VALUES (7, 'Mercury', 36, false, 'Terrestrial', 4, 'Closest planet to the Sun with extreme temperatures');
+INSERT INTO public.planet VALUES (8, 'Uranus', 1784, false, 'Ice Giant', 4, 'Rotates on its side, creating unique seasons');
+INSERT INTO public.planet VALUES (9, 'Pluto', 5900, false, 'Dwarf', 5, 'Dwarf planet in the Kuiper Belt with a heart-shaped feature');
+INSERT INTO public.planet VALUES (10, 'Kepler-186f', 500, true, 'Terrestrial', 6, 'Exoplanet in the habitable zone of its star');
+INSERT INTO public.planet VALUES (11, 'Proxima b', 4, false, 'Terrestrial', 6, 'Closest known exoplanet to Earth in the Alpha Centauri system');
+INSERT INTO public.planet VALUES (12, 'Gliese 581g', 20, true, 'Terrestrial', 6, 'Possibly habitable exoplanet in the Gliese 581 system');
 
 
 --
@@ -297,6 +350,13 @@ INSERT INTO public.star VALUES (6, 'Antares', 3500, 6000, false, true, 2);
 --
 
 SELECT pg_catalog.setval('public.galaxy_galaxy_id_seq', 6, true);
+
+
+--
+-- Name: galaxy_types_galaxy_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
+--
+
+SELECT pg_catalog.setval('public.galaxy_types_galaxy_type_id_seq', 3, true);
 
 
 --
@@ -321,11 +381,35 @@ SELECT pg_catalog.setval('public.star_star_id_seq', 6, true);
 
 
 --
+-- Name: galaxy galaxy_name_key; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.galaxy
+    ADD CONSTRAINT galaxy_name_key UNIQUE (name);
+
+
+--
 -- Name: galaxy galaxy_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
 --
 
 ALTER TABLE ONLY public.galaxy
     ADD CONSTRAINT galaxy_pkey PRIMARY KEY (galaxy_id);
+
+
+--
+-- Name: galaxy_type galaxy_types_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.galaxy_type
+    ADD CONSTRAINT galaxy_types_pkey PRIMARY KEY (galaxy_type_id);
+
+
+--
+-- Name: galaxy_type galaxy_types_type_name_key; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.galaxy_type
+    ADD CONSTRAINT galaxy_types_type_name_key UNIQUE (name);
 
 
 --
@@ -374,6 +458,14 @@ ALTER TABLE ONLY public.star
 
 ALTER TABLE ONLY public.star
     ADD CONSTRAINT star_pkey PRIMARY KEY (star_id);
+
+
+--
+-- Name: galaxy galaxy_galaxy_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.galaxy
+    ADD CONSTRAINT galaxy_galaxy_type_id_fkey FOREIGN KEY (galaxy_type_id) REFERENCES public.galaxy_type(galaxy_type_id);
 
 
 --
